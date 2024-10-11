@@ -2,7 +2,8 @@
 
 # LICENCIA:
 #
-#    CDDNSU (Cloudflare Dynamic DNS Updater) Copyright © 2024 Alejandro Delgado Rodriguez - www.aledero.com
+#    CDDNSU (Cloudflare Dynamic DNS Updater) 
+#    Copyright © 2024 Alejandro Delgado Rodriguez - www.aledero.com
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@
 NOMBRE_SCRIPT="CDDNSU (Cloudflare Dynamic DNS Updater)"
 AUTOR_SCRIPT="Alejandro Delgado Rodriguez (aledero)"
 WEB_AUTOR_SCRIPT="www.aledero.com"
-VERSION_SCRIPT="v0.1"
+VERSION_SCRIPT="v0.2"
 IDIOMA_SCRIPT="ES"
 SO_VALIDOS="Debian Based OS"
 COPYRIGHT_INFO="2024 $AUTOR_SCRIPT - $WEB_AUTOR_SCRIPT"
@@ -72,24 +73,11 @@ source ./config.sh
 if [ -z "$WEB_OBTENER_IP" ] || [ -z "$FICHERO_IP" ] || [ -z "$CF_DNS_ZONE" ] || [ -z "$CF_DNS_RECORD" ] || [ -z "$CF_AUTH_API_KEY" ] 
 then
    echo ""
-   echo "[ERROR] No se han obtenido correctamente los valores requiridos de configuración"
+   echo "[ERROR] No se han obtenido correctamente los valores requiridos de configuración o no se ha especificado algun valor requerido"
    closeScript
 fi
-echo "[SUCCESS] Se han obtenido correctamente los valores requiridos de configuración"
-
-# COMPROBANDO PERMISOS
-echo "¡ADVERTENCIA!: ¡Es obligatorio ejecutar este Script con permisos de root (sudo) y el fichero debe tener permisos 777 para que no de ningun error!"
 echo ""
-echo "[INFO] Comprobando permisos de root..."
-if [ "$(id -u)" -eq 0 ]
-then
-   echo ""
-   echo "[SUCCESS] Tienes permisos de root"
-else
-   echo ""
-   echo "[ERROR] No estás ejecutando este script con permisos de root"
-   closeScript
-fi
+echo "[SUCCESS] Se han obtenido correctamente los valores requiridos de configuración"
 
 # TRAE IP ACTUAL
 echo ""
@@ -163,7 +151,7 @@ CF_INT_UPDATE_RES=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$
     -H "Content-Type:application/json" \
     --data "{\"id\":\"$CF_INT_RECORDID\",\"type\":\"A\",\"name\":\"$CF_INT_FULLRECORD\",\"content\":\"$IP_ACTUAL\",\"ttl\":3600,\"proxied\":false}" | jq -r '.result | .content' )
 
-if [ -z "$CF_INT_RECORDID" ] 
+if [ -z "$CF_INT_UPDATE_RES" ] 
 then
     echo ""
     echo "[ERROR] No hemos podido actualizar la IP en Cloudflare ($CF_INT_UPDATE_RES != $IP_ACTUAL)"
